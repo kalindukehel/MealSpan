@@ -40,13 +40,16 @@ class gui:
         self.calculate.grid(row=7,column=1)
         self.perday.grid(row=8,column=2)
     def calculate(self): #calculates days between dates, and calculates money per day
-        d2 = date(int(self.tempdate[6:]),int(self.tempdate[3:5]),int(self.tempdate[0:2]))
-        print(d2)
-        d1 = date.today().strftime('%Y-%m-%d')
-        d1 = date(int(d1[0:4]),int(d1[5:7]),int(d1[8:]))
-        diff = (d2 - d1).days
-        mperday = str(round((float(self.basicbal[1:].replace(',',''))+float(self.flexbal[1:].replace(',','')))/float(diff),2))
-        self.perday.config(text=('$'+mperday+'/day'))
+        try:
+            d2 = date(int(self.tempdate[6:]),int(self.tempdate[3:5]),int(self.tempdate[0:2]))
+            print(d2)
+            d1 = date.today().strftime('%Y-%m-%d')
+            d1 = date(int(d1[0:4]),int(d1[5:7]),int(d1[8:]))
+            diff = (d2 - d1).days
+            mperday = str(round((float(self.basicbal[1:].replace(',',''))+float(self.flexbal[1:].replace(',','')))/float(diff),2))
+            self.perday.config(text=('$'+mperday+'/day'))
+        except Exception as ValueError:
+            print("Invalid Date DD-MM-YYYY")
     def set(self): #sets new target date
         file = open(r'date.txt','w')
         file.write(self.setinput.get())
