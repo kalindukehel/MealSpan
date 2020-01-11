@@ -14,7 +14,7 @@ class gui:
             self.tempdate = 'DD-MM-YYYY'
         self.master = master
         master.title('Meal Plan')
-
+        master.geometry('300x300')
         self.userlabel = Label(master,text='Username:')
         self.passlabel = Label(master,text ='Password:')
         self.ballabel = Label(master,text='Balance:')
@@ -37,11 +37,11 @@ class gui:
         self.datelabel.grid(row=5,column=2)
         self.setinput.grid(row=6,column=2)
         self.set.grid(row=7,column=2,pady=10)
-        self.calculate.grid(row=7,column=1)
+        self.calculate.grid(row=9,column=2)
         self.perday.grid(row=8,column=2)
     def calculate(self): #calculates days between dates, and calculates money per day
         try:
-            d2 = date(int(self.tempdate[6:]),int(self.tempdate[3:5]),int(self.tempdate[0:2]))
+            d2 = date(int(self.tempdate[0:4]),int(self.tempdate[5:7]),int(self.tempdate[8:]))
             print(d2)
             d1 = date.today().strftime('%Y-%m-%d')
             d1 = date(int(d1[0:4]),int(d1[5:7]),int(d1[8:]))
@@ -49,7 +49,7 @@ class gui:
             mperday = str(round((float(self.basicbal[1:].replace(',',''))+float(self.flexbal[1:].replace(',','')))/float(diff),2))
             self.perday.config(text=('$'+mperday+'/day'))
         except Exception as ValueError:
-            print("Invalid Date DD-MM-YYYY")
+            print("Invalid Date YYYY-MM-DD")
     def set(self): #sets new target date
         file = open(r'date.txt','w')
         file.write(self.setinput.get())
