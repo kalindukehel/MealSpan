@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from tkinter import Tk, Button, Text, Label, Entry
+from tkinter import Tk, Button, Text, Label, Entry, Toplevel
 import requests
 from bs4 import BeautifulSoup
 from datetime import date
@@ -8,12 +8,12 @@ from datetime import date
 class gui:
     def __init__(self,master):
         try:
-            datefile = open(r'date.txt','r')
+            datefile = open(r'date.dat','r')
             self.tempdate = datefile.read()
         except Exception as FileNotFoundError:
             self.tempdate = 'DD-MM-YYYY'
         self.master = master
-        master.title('Meal Plan')
+        master.title('MealSpan')
         master.geometry('300x300')
         self.userlabel = Label(master,text='Username:')
         self.passlabel = Label(master,text ='Password:')
@@ -42,16 +42,18 @@ class gui:
     def calculate(self): #calculates days between dates, and calculates money per day
         try:
             d2 = date(int(self.tempdate[0:4]),int(self.tempdate[5:7]),int(self.tempdate[8:]))
-            print(d2)
+            #print(d2)
             d1 = date.today().strftime('%Y-%m-%d')
             d1 = date(int(d1[0:4]),int(d1[5:7]),int(d1[8:]))
             diff = (d2 - d1).days
             mperday = str(round((float(self.basicbal[1:].replace(',',''))+float(self.flexbal[1:].replace(',','')))/float(diff),2))
             self.perday.config(text=('$'+mperday+'/day'))
         except Exception as ValueError:
-            print("Invalid Date YYYY-MM-DD")
+            #print("Invalid Date YYYY-MM-DD")
+            #messagebox.showerror("Error", "Invalid Date, use format YYYY-MM-DD")
+            errorpopup("Date")
     def set(self): #sets new target date
-        file = open(r'date.txt','w')
+        file = open(r'date.dat','w')
         file.write(self.setinput.get())
         self.datelabel.config(text=self.setinput.get())
         self.tempdate=self.setinput.get()
@@ -71,17 +73,32 @@ class gui:
 
                 auth = s.post('https://sso2.identity.uoguelph.ca/oam/server/auth_cred_submit',data=payload)
                 if (auth.url != 'https://onlineservices.hospitality.uoguelph.ca/student/studenthome.cshtml'): #if not this link, user entered invalid info
-                    print("Invalid username/password")
+                    #print("Invalid username/password")
+                    errorpopup("Credentials")
                 else:
                     balpage = s.get('https://onlineservices.hospitality.uoguelph.ca/secure/onlineinquiry.cshtml')
                     soup = BeautifulSoup(balpage.text,'html5lib')
                     self.basicbal = soup.find_all('td',{'align':'left'})[3].text #finding value of basic balance
                     self.flexbal = soup.find_all('td',{'align':'left'})[5].text #finding value of flex balance
-                    print(self.basicbal,self.flexbal)
+                    #print(self.basicbal,self.flexbal)
                     self.ballabel.config(text=('Basic:',self.basicbal,'Flex:',self.flexbal))
             except Exception as NewConnectionError:
-                print("No internet connection try again.")
-
+                #print("No internet connection try again.")
+                errorpopup("Connection")
+def errorpopup(code):
+    tl = Toplevel(root)
+    tl.title("Error")
+    tl.tkraise()
+    if(code=="Date"):
+        message = "Invalid Date, use format YYYY-MM-DD"
+    elif(code=="Connection"):
+        message = "Connection Error, try again"
+    elif(code=="Credentials"):
+        message = "Invalid username/password, try again"
+    tl.Label = Label(tl,text=message)
+    tl.Label.grid(row=1,column=1,pady=10)
+    tl.Button = Button(tl,text="Ok",command=tl.destroy)
+    tl.Button.grid(row=2,column=1)
 root = Tk()
 gui(root)
 root.mainloop()
