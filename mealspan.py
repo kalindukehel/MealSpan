@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-from tkinter import Tk, Button, Text, Label, Entry, Toplevel
+from tkinter import Tk, Button, Text, Label, Entry, Toplevel, Checkbutton, IntVar
 import requests
 from bs4 import BeautifulSoup
 from datetime import date
+import numpy as np
 
 class gui:
     def __init__(self,master):
@@ -26,6 +27,8 @@ class gui:
         self.setinput = Entry(master)
         self.calculate = Button(master,text='Calculate',command=self.calculate)
         self.perday = Label(master,text = 'N/A')
+        self.checkboxstate = IntVar()
+        self.excludeweekends = Checkbutton(master,text='Exclude Weekends',variable = self.checkboxstate)
 
         #placement
         self.userlabel.grid(row=1,column=1)
@@ -39,13 +42,17 @@ class gui:
         self.set.grid(row=7,column=2,pady=10)
         self.calculate.grid(row=9,column=2)
         self.perday.grid(row=8,column=2)
+        self.excludeweekends.grid(row=10,column = 2)
     def calculate(self): #calculates days between dates, and calculates money per day
         try:
             d2 = date(int(self.tempdate[0:4]),int(self.tempdate[5:7]),int(self.tempdate[8:]))
             #print(d2)
             d1 = date.today().strftime('%Y-%m-%d')
             d1 = date(int(d1[0:4]),int(d1[5:7]),int(d1[8:]))
-            diff = (d2 - d1).days
+            if(self.checkboxstate.get() ==0):
+                diff = (d2 - d1).days
+            else:
+                diff = np.busday_count(d1,d2)+ 1
             mperday = str(round((float(self.basicbal[1:].replace(',',''))+float(self.flexbal[1:].replace(',','')))/float(diff),2))
             self.perday.config(text=('$'+mperday+'/day'))
         except Exception as ValueError:
