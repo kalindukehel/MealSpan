@@ -10,3 +10,5 @@ A program to help University of Guelph students to budget their spending through
 4. Enter last day of meal plan to calculate, ex. end of the semester 2020-04-21 then click set
 
 5. Click calculate for the result of $/day
+
+![preview](./preview.gif)
