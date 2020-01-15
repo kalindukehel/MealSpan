@@ -11,4 +11,6 @@ A program to help University of Guelph students to budget their spending through
 
 5. Click calculate for the result of $/day
 
+Note: This program calculates days from current date to end date (excludes weekend if option is selected)
+
 ![preview](./preview.gif)
